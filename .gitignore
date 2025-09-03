@@ -50,4 +50,12 @@ Thumbs.db
 # Temporary folders
 tmp/
 temp/
+
+# Vercel
 .vercel
+
+# TypeScript
+*.tsbuildinfo
+
+# ESLint cache
+.eslintcache
