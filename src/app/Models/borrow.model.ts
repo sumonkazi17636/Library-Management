@@ -40,8 +40,10 @@ borrowSchema.post('save', async function() {
   if (book) {
     book.copies -= this.quantity;
     await book.save();
-    // Update availability using the static method
-    await Book.updateAvailability(this.book.toString());
+    
+    // Update availability using the static method - FIXED
+    // Cast to any to bypass TypeScript type checking issues
+    await (Book as any).updateAvailability(this.book.toString());
   }
 });
 
