@@ -23,19 +23,36 @@ app.use('/api/borrow', borrowRoutes);
 
 // Basic test route
 app.get('/', (req, res) => {
-  res.json({ message: 'Library Management API is working!' });
+  res.json({ 
+    message: 'Library Management API is working!',
+    timestamp: new Date().toISOString()
+  });
 });
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI!)
-  .then(() => {
-    console.log('Connected to MongoDB');
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error('MongoDB connection error:', error);
+// Health check endpoint (doesn't require DB connection)
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    timestamp: new Date().toISOString()
   });
+});
 
+// Connect to MongoDB only if MONGODB_URI exists
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+  console.error('MONGODB_URI is not defined in environment variables');
+  // Don't crash the server, just log the error
+} else {
+  mongoose.connect(MONGODB_URI)
+    .then(() => {
+      console.log('Connected to MongoDB');
+    })
+    .catch((error) => {
+      console.error('MongoDB connection error:', error);
+      // Don't crash the server for connection errors
+    });
+}
+
+// Export for Vercel
 export default app;
